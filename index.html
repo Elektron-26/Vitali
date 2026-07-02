@@ -3099,7 +3099,7 @@
       <span id="lic-btn-text">Continue →</span>
     </button>
   </div>
-  <button class="lic-no-account-btn" onclick="licGoToQuiz()">Nimam še računa →</button>
+  <button class="lic-no-account-btn" onclick="licGoToQuiz()">Start 7-day free trial →</button>
 </div>
 
 <!-- ─── LANGUAGE SELECT OVERLAY ─── -->
@@ -5703,7 +5703,7 @@
     ],
   };
   // ─── LANGUAGE GLOBAL ──────────────────────────────────────────────
-  var _currentLang = localStorage.getItem("zz_lang") || "sl";
+  var _currentLang = localStorage.getItem("zz_lang") || "en";
 
   function getQuotes() { return QUOTES_ALL[_currentLang] || QUOTES_ALL.sl; }
 
@@ -17590,7 +17590,7 @@
   }
 
   // ── QUIZ FUNNEL ──────────────────────────────────────────────────
-  var _qLang = localStorage.getItem("zz_lang") || "sl";
+  var _qLang = localStorage.getItem("zz_lang") || "en";
   var _qData = {
     name:'', gender:'', age:0, height:0, weight:0, goalWeight:0,
     goal:'', activity:null, experience:'',
@@ -17931,9 +17931,7 @@
   }
 
   function licGoToQuiz() {
-    var lg = document.getElementById("license-gate");
-    if (lg) lg.classList.add("hidden");
-    showLangGate();
+    window.open(_STRIPE_LINK, "_blank");
   }
 
   function licActivate() {
@@ -18019,6 +18017,9 @@
   }
 
   function _licStartup() {
+    // Apply default language class immediately
+    var savedLang = localStorage.getItem("zz_lang") || "en";
+    document.body.classList.toggle("lang-en", savedLang === "en");
     _initCloudBackupUI();
     initLangSelectOverlay();
     var email = localStorage.getItem("zz_license");
