@@ -17983,9 +17983,12 @@
             }
           } catch(e) {}
         }
+        // Store trial status
+        if (res.trial) localStorage.setItem("zz_trial", "1");
+        else localStorage.removeItem("zz_trial");
         // Load cloud data if opt-in enabled
         if (localStorage.getItem("zz_cloud_backup") === "1") _loadFromCloud(email);
-        _enterApp();
+        _enterApp(res.trial);
       } else {
         if (errEl) errEl.textContent = _qLang === "en" ? "No active subscription found for this email." : "Za ta e-mail ni aktivne naročnine.";
         if (btnEl) btnEl.textContent = _qLang === "en" ? "Continue →" : "Naprej →";
@@ -17996,11 +17999,14 @@
     });
   }
 
-  function _enterApp() {
+  function _enterApp(isTrial) {
     ["lang-gate","quiz-gate","license-gate"].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.classList.add("hidden");
     });
+    if (isTrial || localStorage.getItem("zz_trial") === "1") {
+      showToast("🎉 7-day free trial started!");
+    }
     var discAccepted = localStorage.getItem("zz_disclaimer_v1");
     if (!discAccepted) {
       var modal = document.getElementById("disclaimer-modal");
