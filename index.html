@@ -17638,11 +17638,16 @@
       var el = document.getElementById(p[0]);
       if (el) el.placeholder = p[1];
     });
-    // Po izbiri jezika → pokaži license gate (ne quiz)
+    // Po izbiri jezika
     var lg = document.getElementById("lang-gate");
     if (lg) lg.classList.add("hidden");
-    _translateLicGate(lang);
-    showLicenseGate();
+    if (_goingToTrial) {
+      _goingToTrial = false;
+      window.location.href = _STRIPE_LINK;
+    } else {
+      _translateLicGate(lang);
+      showLicenseGate();
+    }
   }
 
   function qSelectCard(el, field, val) {
@@ -17930,8 +17935,11 @@
     if (inp) setTimeout(function(){ inp.focus(); }, 100);
   }
 
+  var _goingToTrial = false;
+
   function licGoToQuiz() {
-    window.open(_STRIPE_LINK, "_blank");
+    _goingToTrial = true;
+    showLangGate();
   }
 
   function licActivate() {
