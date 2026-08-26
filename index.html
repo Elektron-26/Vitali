@@ -3093,8 +3093,8 @@
         <div class="quiz-result-goal-text" id="q-res-goal-desc">—</div>
       </div>
       <div id="q-res-warnings" style="margin-bottom:0.9rem;"></div>
-      <button class="quiz-btn" onclick="qProceedToPayment()" id="q-res-cta-btn"><span class="sl-only">Začni z Vitali — €4.99/mesec →</span><span class="en-only">Start with Vitali — €4.99/month →</span></button>
-      <div class="quiz-result-note" id="q-res-note"><span class="sl-only">Odkleni celoten personaliziran plan z naročnino</span><span class="en-only">Unlock your full personalized plan with a subscription</span></div>
+      <button class="quiz-btn" onclick="qProceedToPayment()" id="q-res-cta-btn"><span class="sl-only">Začni z Vitali — €9.99 (enkratno) →</span><span class="en-only">Start with Vitali — €9.99 (one-time) →</span></button>
+      <div class="quiz-result-note" id="q-res-note"><span class="sl-only">Odkleni celoten personaliziran plan z enkratnim nakupom</span><span class="en-only">Unlock your full personalized plan with a one-time purchase</span></div>
     </div>
 
   </div>
@@ -3103,7 +3103,7 @@
 <div id="license-gate" class="hidden">
   <div class="lic-logo">🌿</div>
   <div class="lic-title">Vitali</div>
-  <div class="lic-sub">Sign in with your subscription email.<br><span style="font-size:0.8rem;">Your personal wellness tracker.</span></div>
+  <div class="lic-sub">Sign in with your purchase email.<br><span style="font-size:0.8rem;">Your personal wellness tracker.</span></div>
   <div class="lic-card">
     <div class="lic-label">Email address</div>
     <input id="lic-input" class="lic-input" type="email" placeholder="your@email.com"
@@ -3114,7 +3114,7 @@
       <span id="lic-btn-text">Continue →</span>
     </button>
   </div>
-  <button class="lic-no-account-btn" onclick="licGoToQuiz()">Start 7-day free trial →</button>
+  <button class="lic-no-account-btn" onclick="licGoToQuiz()">Get Vitali — €9.99 →</button>
 </div>
 
 <!-- ─── LANGUAGE SELECT OVERLAY ─── -->
@@ -17630,11 +17630,11 @@
   function _translateLicGate(lang) {
     var isEN = lang === "en";
     var btn = document.querySelector(".lic-no-account-btn");
-    if (btn) btn.textContent = isEN ? "Start 7-day free trial →" : "Začni 7-dnevni brezplačni preizkus →";
+    if (btn) btn.textContent = isEN ? "Get Vitali — €9.99 →" : "Kupi Vitali — €9.99 →";
     var sub = document.querySelector(".lic-sub");
     if (sub) sub.innerHTML = isEN
-      ? "Sign in with your subscription email.<br><span style=\"font-size:0.8rem;\">Your personal wellness tracker.</span>"
-      : "Vpišite vaš naročniški e-mail.<br><span style=\"font-size:0.8rem;\">Vaš osebni wellness sledilnik.</span>";
+      ? "Sign in with your purchase email.<br><span style=\"font-size:0.8rem;\">Your personal wellness tracker.</span>"
+      : "Vpišite e-mail, s katerim ste kupili Vitali.<br><span style=\"font-size:0.8rem;\">Vaš osebni wellness sledilnik.</span>";
   }
 
   function qSelectLang(lang) {
@@ -17656,8 +17656,8 @@
     // Po izbiri jezika
     var lg = document.getElementById("lang-gate");
     if (lg) lg.classList.add("hidden");
-    if (_goingToTrial) {
-      _goingToTrial = false;
+    if (_goingToPurchase) {
+      _goingToPurchase = false;
       window.location.href = _STRIPE_LINK;
     } else {
       _translateLicGate(lang);
@@ -17842,7 +17842,7 @@
 
   // ─── CLOUD SYNC ───────────────────────────────────────────────────
   var _WORKER_URL  = "https://vitali-auth.david-730.workers.dev";
-  var _STRIPE_LINK = "https://buy.stripe.com/cNicN44Ntc2Be1a8yAdby01";
+  var _STRIPE_LINK = "https://buy.stripe.com/4gM8wO5Rx4A9cX65modby02";
   var _activeEmail = localStorage.getItem("zz_license") || null;
   var _syncTimer   = null;
 
@@ -17950,10 +17950,10 @@
     if (inp) setTimeout(function(){ inp.focus(); }, 100);
   }
 
-  var _goingToTrial = false;
+  var _goingToPurchase = false;
 
   function licGoToQuiz() {
-    _goingToTrial = true;
+    _goingToPurchase = true;
     showLangGate();
   }
 
@@ -18004,14 +18004,11 @@
             }
           } catch(e) {}
         }
-        // Store trial status
-        if (res.trial) localStorage.setItem("zz_trial", "1");
-        else localStorage.removeItem("zz_trial");
         // Load cloud data if opt-in enabled
         if (localStorage.getItem("zz_cloud_backup") === "1") _loadFromCloud(email);
-        _enterApp(res.trial);
+        _enterApp();
       } else {
-        if (errEl) errEl.textContent = _qLang === "en" ? "No active subscription found for this email." : "Za ta e-mail ni aktivne naročnine.";
+        if (errEl) errEl.textContent = _qLang === "en" ? "No purchase found for this email." : "Za ta e-mail ni najdenega nakupa.";
         if (btnEl) btnEl.textContent = _qLang === "en" ? "Continue →" : "Naprej →";
       }
     }).catch(function() {
@@ -18020,14 +18017,11 @@
     });
   }
 
-  function _enterApp(isTrial) {
+  function _enterApp() {
     ["lang-gate","quiz-gate","license-gate"].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.classList.add("hidden");
     });
-    if (isTrial || localStorage.getItem("zz_trial") === "1") {
-      showToast("🎉 7-day free trial started!");
-    }
     var discAccepted = localStorage.getItem("zz_disclaimer_v1");
     if (!discAccepted) {
       var modal = document.getElementById("disclaimer-modal");
